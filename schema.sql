@@ -70,4 +70,25 @@ CREATE TABLE IF NOT EXISTS fine_settings (
     fine_per_day       DECIMAL(6,2) NOT NULL DEFAULT 5.00,
     loan_period_days   INT NOT NULL DEFAULT 14
 ) ENGINE=InnoDB;
+INSERT INTO fine_settings (fine_per_day, loan_period_days)
+SELECT 5.00, 14 WHERE NOT EXISTS (SELECT 1 FROM fine_settings);
+
+CREATE INDEX idx_books_title         ON books(title);
+CREATE INDEX idx_members_name        ON members(full_name);
+CREATE INDEX idx_transactions_status ON transactions(status);
+CREATE INDEX idx_transactions_due    ON transactions(due_date);
+CREATE OR REPLACE VIEW v_active_issues AS
+SELECT
+    t.transaction_id,
+    b.title         AS book_title,
+    m.full_name     AS member_name,
+    m.membership_code,
+    t.issue_date,
+    t.due_date,
+    DATEDIFF(CURDATE(), t.due_date) AS days_overdue
+FROM transactions t
+JOIN books   b ON t.book_id = b.book_id
+JOIN members m ON t.member_id = m.member_id
+WHERE t.status = 'Issued';
+
 
