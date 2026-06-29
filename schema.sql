@@ -40,3 +40,4 @@ CREATE TABLE IF NOT EXISTS books (
     FOREIGN KEY (category_id)  REFERENCES categories(category_id)  ON DELETE SET NULL,
     CHECK (available_copies >= 0 AND available_copies <= total_copies)
 ) ENGINE=InnoDB;
+
